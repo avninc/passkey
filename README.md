@@ -1,6 +1,6 @@
 # Lanyon Passkey
 
-This integration allows to utilize the Lanyon Passkey integration for Hotel Reservations and booking.
+This integration allows to utilize the Lanyon Passkey integration for Hotel Reservation Management and booking.
 
 
 ## Installation
