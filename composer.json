@@ -1,0 +1,24 @@
+{
+    "name": "avninc/passkey",
+    "description": "Lanyon Passkey Integration",
+    "keywords": ["passky", "lanyon", "php", "integration"],
+    "homepage": "http://lanyon.com",
+    "license": "MIT",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "Passkey\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Passkey\\Test\\": "tests/"
+        }
+    },
+    "require": {
+        "php": "^7.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^5.4"
+    }
+}
