@@ -7,11 +7,13 @@ class Security
   protected $username;
   protected $password;
   protected $partnerId;
+  protected $token;
 
-  public function __construct($username, $password, $partnerId) {
+  public function __construct($username, $password, $partnerId, $token=' ') {
     $this->setUsername($username)
           ->setPassword($password)
-          ->setPartnerId($partnerId);
+          ->setPartnerId($partnerId)
+          ->setToken($token);
 
     return $this;
   }
@@ -37,6 +39,13 @@ class Security
     return $this;
   }
 
+  public function setToken($token)
+  {
+    $this->token = $token;
+
+    return $this;
+  }
+
   public function getUsername() {
     return $this->username;
   }
@@ -47,5 +56,9 @@ class Security
 
   public function getPartnerId() {
     return $this->partnerId;
+  }
+
+  public function getToken() {
+    return $this->token;
   }
 }

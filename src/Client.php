@@ -5,6 +5,8 @@ namespace Passkey;
 use SoapClient;
 use Passkey\Common\{Security, Message};
 use Sabre\Xml\Service;
+use RecursiveIteratorIterator;
+use RecursiveArrayIterator;
 
 abstract class Client extends SoapClient
 {
@@ -71,11 +73,16 @@ abstract class Client extends SoapClient
       parent::__construct($this->wsdlFile, $options);
   }
 
-  public function getXml() {
-    return $this->getXmlService()->write($this->root, $this->xmlElements);
+  public function getXml()
+  {
+    $this->xmlElements['Data'] = $this->setDataNamespace($this->xmlElements['Data']);
+
+    $xml = $this->getXmlService()->write($this->root, $this->xmlElements);
+    return $this->prepare($xml);
   }
 
-  public function setSecurity(Security $security) {
+  public function setSecurity(Security $security)
+  {
     $this->security = $security;
 
     $this->addElement('Security', [
@@ -84,17 +91,19 @@ abstract class Client extends SoapClient
           'PassWord' => $this->security->getPassword()
       ],
       'PartnerID' => $this->security->getPartnerId(),
-      'Token' => ' ',
+      'Token' => $this->security->getToken(),
     ]);
 
     return $this;
   }
 
-  public function getSecurity() {
+  public function getSecurity()
+  {
     return $this->security;
   }
 
-  public function setMessage(Message $message) {
+  public function setMessage(Message $message)
+  {
     $this->message = $message;
 
     $this->addElement('Message', [
@@ -108,42 +117,103 @@ abstract class Client extends SoapClient
     return $this;
   }
 
-  public function getMessage() {
+  public function getMessage()
+  {
     return $this->message;
   }
 
-  public function setWsdl($file) {
+  public function setWsdl($file)
+  {
     $this->wsdlFile = $file;
 
     return $this;
   }
 
-  public function getWsdl() {
+  public function getWsdl()
+  {
     return $this->wsdlFile;
   }
 
-  public function setNamespace(array $namespace) {
+  public function setNamespace(array $namespace)
+  {
     $this->namespace = $namespace;
 
     return $this;
   }
 
-  public function getNamespace() {
+  public function getNamespace()
+  {
     return $this->namespace;
   }
 
-  public function setXmlService(Service $service) {
+  public function setXmlService(Service $service)
+  {
     $this->xmlService = $service;
 
     return $this;
   }
 
-  public function getXmlService() {
+  public function getXmlService()
+  {
     return $this->xmlService;
   }
 
-  protected function addElement($key, $element)
+  public function addElement($key, $element)
   {
     $this->xmlElements[$key] = $element;
+  }
+
+  public function getElements()
+  {
+    return $this->xmlElements;
+  }
+
+  protected function prepare(&$xml) {
+    // Fix keys
+    $xml = $this->fixXMLkeys($xml);
+
+
+    return $xml;
+  }
+
+  protected function setDataNamespace(array $input, $parent=null)
+  {
+    $return = [];
+    foreach ($input as $key => $value) {
+      $k = $key;
+
+      if(!$this->skipNamespaceKeys($key) && $parent != 'attributes' && !is_int($key)) {
+        $key = '{'.array_search(reset($this->namespace), $this->namespace).'}' . $key;
+      }
+
+      if (is_array($value)) {
+        $value = $this->setDataNamespace($value, $k);
+      }
+
+      $return[$key] = $value;
+    }
+
+    return $return;
+  }
+
+  protected function skipNamespaceKeys($key) {
+    return in_array($key, ['value', 'attributes']);
+  }
+
+  /**
+   * Since an array can't hold the exact same key we need
+   * to fix certain keys after we generate the XML
+   * Simple find and replace
+   *
+   *
+   *
+   */
+  protected function fixXMLkeys($xml)
+  {
+    $xml = str_ireplace(['FaxTelephone', 'FaxNumber', 'FaxTechType'], ['Telephone', 'PhoneNumber', 'PhoneTechType'], $xml);
+
+    $xml = str_ireplace(['AddressLine2'], ['AddressLine'], $xml);
+
+    return $xml;
   }
 }
