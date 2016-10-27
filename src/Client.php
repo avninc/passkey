@@ -8,8 +8,34 @@ use Sabre\Xml\Service;
 use RecursiveIteratorIterator;
 use RecursiveArrayIterator;
 
-abstract class Client extends SoapClient
+class Client extends SoapClient
 {
+  /**
+   * Live API endpoint
+   *
+   * @var string
+   */
+  const LIVE = 'https://api.passkey.com/axis/services';
+  /**
+   * Development API endpoint
+   *
+   * @var string
+   */
+  const DEVELOPMENT = 'https://training-api.passkey.com/axis/services';
+  /**
+   * Service
+   *
+   * @var string
+   */
+  protected $service = null;
+
+  /**
+   * In Debug
+   *
+   * @var bool
+   */
+  protected $isDebug = false;
+
   /**
    * Soap version.
    *
@@ -52,7 +78,7 @@ abstract class Client extends SoapClient
    * @param string               $wsdl    WSDL file
    * @param array(string=>mixed) $options Options array
    */
-  public function __construct($wsdl=null, array $options = [])
+  public function __construct($wsdl=null, array $options = [], bool $isDebug=false)
   {
       // tracing enabled: store last request/response header and body
       if (isset($options['trace']) && $options['trace'] === true) {
@@ -63,8 +89,14 @@ abstract class Client extends SoapClient
           $this->soapVersion = $options['soap_version'];
       }
 
+      if ($isDebug) {
+          $this->setDebug($isDebug);
+      }
+
       if ($wsdl) {
           $this->setWsdl($wsdl);
+      } else {
+          $this->setWsdl($this->getService());
       }
 
       $this->setXmlService(new Service());
@@ -75,7 +107,7 @@ abstract class Client extends SoapClient
 
   public function getXml()
   {
-    $this->xmlElements['Data'] = $this->setDataNamespace($this->xmlElements['Data']);
+    $this->fixData();
 
     $xml = $this->getXmlService()->write($this->root, $this->xmlElements);
     return $this->prepare($xml);
@@ -200,6 +232,12 @@ abstract class Client extends SoapClient
     return in_array($key, ['value', 'attributes']);
   }
 
+  protected function fixData() {
+    if(isset($this->xmlElements['Data'])) {
+      $this->xmlElements['Data'] = $this->setDataNamespace($this->xmlElements['Data']);
+    }
+  }
+
   /**
    * Since an array can't hold the exact same key we need
    * to fix certain keys after we generate the XML
@@ -215,5 +253,26 @@ abstract class Client extends SoapClient
     $xml = str_ireplace(['AddressLine2'], ['AddressLine'], $xml);
 
     return $xml;
+  }
+
+  public function setDebug(bool $flag)
+  {
+    $this->isDebug = $flag;
+
+    return $this;
+  }
+
+  public function isDebug()
+  {
+    return $this->isDebug;
+  }
+
+  protected function getEndpoint()
+  {
+    return $this->isDebug() ? static::DEVELOPMENT : static::LIVE;
+  }
+
+  protected function getService() {
+    return $this->getEndpoint() . '/' . $this->service . '?wsdl';
   }
 }
