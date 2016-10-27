@@ -5,8 +5,8 @@ namespace Passkey\Tests;
 use PHPUnit\Framework\TestCase;
 use Passkey\Reservation\Client as ReservationClient;
 use Passkey\Reservation\Actions\{Create, Modify, Get, Cancel, Status};
-use Passkey\Common\{Message, Security, Guest, RoomStay,
-                    Info, GlobalInfo, Guarantee, OtherPayment};
+use Passkey\Common\{Message, Security, Guest, RoomStay, Reservation,
+                    Info, GlobalInfo, Guarantee, OtherPayment, UniqueId};
 
 class ClientTest extends TestCase
 {
@@ -63,6 +63,8 @@ class ClientTest extends TestCase
       $message = new Message('CreateReservation', 'CreateReservation');
       $createClient->setMessage($message);
 
+      $reservation = new Reservation;
+
       $guest = new Guest;
       $guest->setNamePrefix('test')
             ->setGivenName('test1')
@@ -105,7 +107,9 @@ class ClientTest extends TestCase
             ->setSpecRequestPref('testing special features')
             ->setCompanyName('AVN Media Network, Inc.');
 
-      $createClient->addGuests([$guest, $guest2]);
+      $reservation->addGuests([$guest, $guest2]);
+
+      $createClient->setReservation($reservation);
 
       $xml = $createClient->getXml();
 
@@ -123,9 +127,12 @@ class ClientTest extends TestCase
       $message = new Message('CreateReservation', 'CreateReservation');
       $createClient->setMessage($message);
 
+      $reservation = new Reservation;
+
       $roomStay = new RoomStay(['NumberOfUnits' => 2, 'AgeQualifyingCode' => 1, 'Count' => 2]);
 
-      $createClient->setRoomStay($roomStay);
+      $reservation->setRoomStay($roomStay);
+      $createClient->setReservation($reservation);
 
       $xml = $createClient->getXml();
 
@@ -134,10 +141,12 @@ class ClientTest extends TestCase
 
       // Modify
       $createClient->resetXml();
+      $reservation = new Reservation;
       $roomStay = new RoomStay();
       $roomStay->setAgeQualifyingCode(22)->setNumberOfUnits(1)->setCount(3);
 
-      $createClient->setRoomStay($roomStay);
+      $reservation->setRoomStay($roomStay);
+      $createClient->setReservation($reservation);
 
       $xml = $createClient->getXml();
 
@@ -154,6 +163,8 @@ class ClientTest extends TestCase
       $message = new Message('CreateReservation', 'CreateReservation');
       $createClient->setMessage($message);
 
+      $reservation = new Reservation;
+
       $info = new Info(['CustomFields' => ['test1', 'test2', 'test3']]);
       $info->setEventID(1)->setAttendeeCode('RER')
             ->setSendAck('true')
@@ -166,7 +177,9 @@ class ClientTest extends TestCase
             ->setPhoneNumber('8182551122')
             ->setPrimaryGuestRPH(1)
             ->setReferrer('avn.com');
-      $createClient->setInfo($info);
+      $reservation->setInfo($info);
+
+      $createClient->setReservation($reservation);
 
       $xml = $createClient->getXml();
 
@@ -184,12 +197,16 @@ class ClientTest extends TestCase
       $message = new Message('CreateReservation', 'CreateReservation');
       $createClient->setMessage($message);
 
+      $reservation = new Reservation;
+
       $info = new GlobalInfo();
       $info->setAgeQualifyingCode(22)->setCount(3)
             ->setEarliestDate('2016-01-01')
             ->setLatestDate('2016-01-12')
             ->setText('some text');
-      $createClient->setGlobalInfo($info);
+      $reservation->setGlobalInfo($info);
+
+      $createClient->setReservation($reservation);
 
       $xml = $createClient->getXml();
 
@@ -205,6 +222,8 @@ class ClientTest extends TestCase
 
       $message = new Message('CreateReservation', 'CreateReservation');
       $createClient->setMessage($message);
+
+      $reservation = new Reservation;
 
       $guarantee = new Guarantee;
       $guarantee->setCardHolderName('Vincent Gabriel')
@@ -223,7 +242,9 @@ class ClientTest extends TestCase
             ->setLatestDate('2016-01-12')
             ->setText('some text')
             ->setGuarantee($guarantee);
-      $createClient->setGlobalInfo($info);
+      $reservation->setGlobalInfo($info);
+
+      $createClient->setReservation($reservation);
 
       $xml = $createClient->getXml();
 
@@ -239,6 +260,8 @@ class ClientTest extends TestCase
 
       $message = new Message('CreateReservation', 'CreateReservation');
       $createClient->setMessage($message);
+
+      $reservation = new Reservation;
 
       $info = new Info(['CustomFields' => ['test1', 'test2', 'test3']]);
       $info->setEventID(1)->setAttendeeCode('RER')
@@ -270,12 +293,91 @@ class ClientTest extends TestCase
                    ->setPhoneNumber('88827271212');
       $info->setOtherPayment($otherPayment);
 
-      $createClient->setInfo($info);
+      $reservation->setInfo($info);
+
+      $createClient->setReservation($reservation);
 
       $xml = $createClient->getXml();
-      
+
       $this->assertContains('<ota:OPayAmt Amount="250"/>', $xml);
       $this->assertContains('<ota:OPayReferenceNum>123</ota:OPayReferenceNum>', $xml);
       $this->assertContains('<ota:AddressLine>1212 Tujunga Ave</ota:AddressLine>', $xml);
+    }
+
+    public function testModify() {
+      $client = new Modify;
+      $security = new Security('reglinkapi', 'passkey1', 136260);
+      $client->setSecurity($security);
+
+      $message = new Message('ModifyReservation', 'ModifyReservation');
+      $client->setMessage($message);
+
+      $reservation = new Reservation;
+      $uniqueId = new UniqueId('328SZVW7');
+
+      $reservation->setUniqueId($uniqueId);
+
+      $client->setReservation($reservation);
+
+      $xml = $client->getXml();
+
+      $this->assertContains('<ota:UniqueId Type="RES" Id="328SZVW7"/>', $xml);
+      $this->assertContains('<ModifyReservationRQ xmlns:ota="http://www.opentravel.org/OTA/2002/11">', $xml);
+    }
+
+    public function testCancel() {
+      $client = new Cancel;
+      $security = new Security('reglinkapi', 'passkey1', 136260);
+      $client->setSecurity($security);
+
+      $message = new Message('CancelReservation', 'CancelReservation');
+      $client->setMessage($message);
+
+      $uniqueId = new UniqueId('328SZVW7');
+
+      $client->setUniqueId($uniqueId);
+
+      $xml = $client->getXml();
+
+      $this->assertContains('<Service>CancelReservation</Service>', $xml);
+      $this->assertContains('<ota:UniqueId Type="RES" Id="328SZVW7"/>', $xml);
+    }
+
+    public function testStatus() {
+      $client = new Status;
+      $security = new Security('reglinkapi', 'passkey1', 136260);
+      $client->setSecurity($security);
+
+      $message = new Message('GetMessageStatus', 'GetMessageStatus');
+      $client->setMessage($message);
+
+      $client->setGuid('GUId-123');
+
+      $xml = $client->getXml();
+
+      $this->assertContains('<Service>GetMessageStatus</Service>', $xml);
+      $this->assertContains('<GUID>GUId-123</GUID>', $xml);
+    }
+
+    public function testGet() {
+      $client = new Get;
+      $security = new Security('reglinkapi', 'passkey1', 136260);
+      $client->setSecurity($security);
+
+      $message = new Message('GetReservation', 'GetReservation');
+      $client->setMessage($message);
+
+      $uniqueId = new UniqueId('328SZVW7');
+
+      $client->setUniqueId($uniqueId);
+      $client->setShowAckInfo('true');
+      $client->setShowResNotes('true');
+      $client->setShowCCInfo('true');
+
+      $xml = $client->getXml();
+
+      $this->assertContains('<ota:UniqueId Type="RES" Id="328SZVW7"/>', $xml);
+      $this->assertContains('<ShowAckInfo>true</ShowAckInfo>', $xml);
+      $this->assertContains('<OP>GetReservation</OP>', $xml);
     }
 }

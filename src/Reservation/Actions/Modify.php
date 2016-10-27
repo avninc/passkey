@@ -2,9 +2,8 @@
 
 namespace Passkey\Reservation\Actions;
 
-use Passkey\Reservation\Client;
 
-class Modify extends Client
+class Modify extends Create
 {
   protected $root = 'ModifyReservationRQ';
 }

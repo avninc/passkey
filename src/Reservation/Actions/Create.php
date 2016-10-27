@@ -3,7 +3,7 @@
 namespace Passkey\Reservation\Actions;
 
 use Passkey\Reservation\Client;
-use Passkey\Common\{Guest, RoomStay, Info, GlobalInfo};
+use Passkey\Common\Reservation;
 
 class Create extends Client
 {
@@ -26,48 +26,12 @@ class Create extends Client
   {
     // Add elements
     $this->addElement('Data', [
-      'OTA_HotelResRQ' => [
-        'HotelReservations' => [
-          'HotelReservation' => [
-            'attributes' => ['RoomStayReservation' => 'true'],
-            'value' => [
-              'RoomStays' => [],
-              'ResGuests' => [],
-              'ResGlobalInfo' => [],
-              'TPA_Extensions' => [],
-            ]
-          ],
-        ],
-      ],
+      'OTA_HotelResRQ' => [],
     ]);
   }
 
-  public function addGuest(Guest $guest)
+  public function setReservation(Reservation $reservation)
   {
-    $this->xmlElements['Data']['OTA_HotelResRQ']['HotelReservations']['HotelReservation']['value']['ResGuests'][] = $guest->getParams();
-  }
-
-  public function addGuests(array $guests=[])
-  {
-    foreach($guests as $guest) {
-      $this->addGuest($guest);
-    }
-
-    return $this;
-  }
-
-  public function setRoomStay(RoomStay $roomStay)
-  {
-    $this->xmlElements['Data']['OTA_HotelResRQ']['HotelReservations']['HotelReservation']['value']['RoomStays'] = $roomStay->getParams();
-  }
-
-  public function setInfo(Info $info)
-  {
-    $this->xmlElements['Data']['OTA_HotelResRQ']['HotelReservations']['HotelReservation']['value']['TPA_Extensions'] = $info->getParams();
-  }
-
-  public function setGlobalInfo(GlobalInfo $info)
-  {
-    $this->xmlElements['Data']['OTA_HotelResRQ']['HotelReservations']['HotelReservation']['value']['ResGlobalInfo'] = $info->getParams();
+    $this->xmlElements['Data']['OTA_HotelResRQ'] = $reservation->getParams();
   }
 }

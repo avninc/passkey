@@ -72,6 +72,8 @@ class Client extends SoapClient
 
   protected $xmlElements = [];
 
+  protected $encodeData = true;
+
   /**
    * Constructor.
    *
@@ -107,7 +109,9 @@ class Client extends SoapClient
 
   public function getXml()
   {
-    $this->fixData();
+    if($this->encodeData) {
+      $this->fixData();
+    }
 
     $xml = $this->getXmlService()->write($this->root, $this->xmlElements);
     return $this->prepare($xml);
@@ -248,7 +252,7 @@ class Client extends SoapClient
    */
   protected function fixXMLkeys($xml)
   {
-    $xml = str_ireplace(['FaxTelephone', 'FaxNumber', 'FaxTechType'], ['Telephone', 'PhoneNumber', 'PhoneTechType'], $xml);
+    $xml = str_ireplace(['FaxTelephone', 'FaxNumber', 'FaxTechType', '<OTA_ReadRQ', '</OTA_ReadRQ'], ['Telephone', 'PhoneNumber', 'PhoneTechType', '<ota:OTA_ReadRQ', '</ota:OTA_ReadRQ'], $xml);
 
     $xml = str_ireplace(['AddressLine2'], ['AddressLine'], $xml);
 
