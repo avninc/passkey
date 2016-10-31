@@ -2,27 +2,13 @@
 
 namespace Passkey\Reservation\Actions;
 
-use Passkey\Reservation\Client;
-use Passkey\Common\Reservation;
+use Passkey\Reservation\Reservation;
 
-class Create extends Client
+class Create extends Action
 {
   protected $root = 'CreateReservationRQ';
 
-  /**
-   * Constructor.
-   *
-   * @param string               $wsdl    WSDL file
-   * @param array(string=>mixed) $options Options array
-   */
-  public function __construct($wsdl=null, array $options = [], bool $isDebug=false)
-  {
-      parent::__construct($wsdl, $options, $isDebug);
-
-      $this->resetXml();
-  }
-
-  public function resetXml()
+  public function reset()
   {
     // Add elements
     $this->addElement('Data', [

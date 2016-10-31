@@ -1,6 +1,9 @@
 <?php
 
-namespace Passkey\Common;
+namespace Passkey\Reservation;
+
+use Passkey\Common\{Element, UniqueId};
+use Passkey\Reservation\Model\{RoomStay, Guest, Info, GlobalInfo};
 
 class Reservation extends Element
 {
@@ -8,9 +11,10 @@ class Reservation extends Element
     protected $CreateDateTime = null;
     protected $LastModifyDateTime = null;
 
-
     public function __construct(array $params=[])
     {
+        Guest::reset();
+
         $items = [
           'HotelReservations' => [
             'HotelReservation' => [

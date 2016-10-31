@@ -5,6 +5,7 @@ namespace Passkey;
 use SoapClient;
 use Passkey\Common\{Security, Message};
 use Sabre\Xml\Service;
+use Sabre\Xml\Reader;
 use RecursiveIteratorIterator;
 use RecursiveArrayIterator;
 
@@ -22,19 +23,21 @@ class Client extends SoapClient
    * @var string
    */
   const DEVELOPMENT = 'https://training-api.passkey.com/axis/services';
+
+  public static $WSDL;
   /**
    * Service
    *
    * @var string
    */
-  protected $service = null;
+  protected static $service = null;
 
   /**
    * In Debug
    *
    * @var bool
    */
-  protected $isDebug = false;
+  protected static $isDebug = false;
 
   /**
    * Soap version.
@@ -53,7 +56,7 @@ class Client extends SoapClient
   *
   * @var string
   */
-  protected $wsdlfile = null;
+  protected static $wsdlFile = null;
 
   /**
    * XML reader/writer
@@ -91,20 +94,18 @@ class Client extends SoapClient
           $this->soapVersion = $options['soap_version'];
       }
 
-      if ($isDebug) {
-          $this->setDebug($isDebug);
-      }
+      static::setDebug($isDebug);
 
       if ($wsdl) {
-          $this->setWsdl($wsdl);
+          static::setWsdl($wsdl);
       } else {
-          $this->setWsdl($this->getService());
+          static::setWsdl(static::getService());
       }
 
       $this->setXmlService(new Service());
       $this->getXmlService()->namespaceMap = $this->namespace;
 
-      parent::__construct($this->wsdlFile, $options);
+      parent::__construct(static::getWsdl(), $options + ['soap_version' => $this->soapVersion, 'trace' => $this->tracingEnabled]);
   }
 
   public function getXml()
@@ -124,7 +125,7 @@ class Client extends SoapClient
     $this->addElement('Security', [
       'Login' => [
           'UserName' => $this->security->getUsername(),
-          'PassWord' => $this->security->getPassword()
+          'Password' => $this->security->getPassword()
       ],
       'PartnerID' => $this->security->getPartnerId(),
       'Token' => $this->security->getToken(),
@@ -158,16 +159,15 @@ class Client extends SoapClient
     return $this->message;
   }
 
-  public function setWsdl($file)
+  public static function setWsdl($file)
   {
-    $this->wsdlFile = $file;
-
-    return $this;
+    self::$wsdlFile = $file;
+    self::$WSDL = static::getService();
   }
 
-  public function getWsdl()
+  public static function getWsdl()
   {
-    return $this->wsdlFile;
+    return self::$WSDL;
   }
 
   public function setNamespace(array $namespace)
@@ -259,24 +259,24 @@ class Client extends SoapClient
     return $xml;
   }
 
-  public function setDebug(bool $flag)
+  public static function setDebug(bool $flag)
   {
-    $this->isDebug = $flag;
-
-    return $this;
+    static::$isDebug = $flag;
+    static::setWsdl(static::getService());
   }
 
-  public function isDebug()
+  public static function isDebug()
   {
-    return $this->isDebug;
+    return static::$isDebug;
   }
 
-  protected function getEndpoint()
+  protected static function getEndpoint()
   {
-    return $this->isDebug() ? static::DEVELOPMENT : static::LIVE;
+    return static::isDebug() ? static::DEVELOPMENT : static::LIVE;
   }
 
-  protected function getService() {
-    return $this->getEndpoint() . '/' . $this->service . '?wsdl';
+  public static function getService()
+  {
+    return static::getEndpoint() . '/' . static::$service . '?wsdl';
   }
 }

@@ -2,27 +2,13 @@
 
 namespace Passkey\Reservation\Actions;
 
-use Passkey\Reservation\Client;
 use Passkey\Common\UniqueId;
 
-class Cancel extends Client
+class Cancel extends Action
 {
   protected $root = 'CancelReservationRQ';
 
-  /**
-   * Constructor.
-   *
-   * @param string               $wsdl    WSDL file
-   * @param array(string=>mixed) $options Options array
-   */
-  public function __construct($wsdl=null, array $options = [], bool $isDebug=false)
-  {
-      parent::__construct($wsdl, $options, $isDebug);
-
-      $this->resetXml();
-  }
-
-  public function resetXml()
+  public function reset()
   {
     // Add elements
     $this->addElement('Data', [

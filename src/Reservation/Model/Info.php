@@ -1,6 +1,8 @@
 <?php
 
-namespace Passkey\Common;
+namespace Passkey\Reservation\Model;
+
+use Passkey\Common\Element;
 
 class Info extends Element
 {
@@ -406,7 +408,6 @@ class Info extends Element
     {
         $this->OtherPayment = $OtherPayment;
         $this->params['PK_Info'] += $OtherPayment->getParams();
-
         return $this;
     }
 }

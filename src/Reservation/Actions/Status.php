@@ -2,27 +2,12 @@
 
 namespace Passkey\Reservation\Actions;
 
-use Passkey\Reservation\Client;
-
-class Status extends Client
+class Status extends Action
 {
   protected $root = 'GetStatusRQ';
   protected $encodeData = false;
 
-  /**
-   * Constructor.
-   *
-   * @param string               $wsdl    WSDL file
-   * @param array(string=>mixed) $options Options array
-   */
-  public function __construct($wsdl=null, array $options = [], bool $isDebug=false)
-  {
-      parent::__construct($wsdl, $options, $isDebug);
-
-      $this->resetXml();
-  }
-
-  public function resetXml()
+  public function reset()
   {
     // Add elements
     $this->addElement('Data', [

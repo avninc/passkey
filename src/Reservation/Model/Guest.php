@@ -1,6 +1,8 @@
 <?php
 
-namespace Passkey\Common;
+namespace Passkey\Reservation\Model;
+
+use Passkey\Common\Element;
 
 class Guest extends Element
 {
@@ -95,6 +97,10 @@ class Guest extends Element
         static::$count++;
 
         return $this;
+    }
+
+    public static function reset() {
+      static::$count = 1;
     }
 
     /**
