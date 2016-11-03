@@ -17,10 +17,10 @@ class ReservationTest extends TestCase
     {
       parent::setUp();
 
-      $this->client = new ReservationClient(null, [], true);
+      $this->client = (new ReservationClient())->setDebug(true)->refresh();
     }
 
-    public function testGuest()
+    public function testaGuest()
     {
       $createClient = new Create;
       $security = new Security('reglinkapi', 'passkey1', 136260);
@@ -230,7 +230,7 @@ class ReservationTest extends TestCase
     }
 
     public function testCreate() {
-      $client = new Create();
+      $client = (new Create())->setDebug(true)->refresh();
 
       $security = new Security('reglinkapi', 'passkey1', 136260);
       $client->setSecurity($security);
@@ -248,7 +248,8 @@ class ReservationTest extends TestCase
       $reservation->setRoomStay($roomStay);
 
       $info = new Info(['CustomFields' => ['test111123', 'test2', 'test3']]);
-      $info->setEventID('139992')->setAttendeeCode('RTEATT0116')
+      $info->setEventID('139992')
+            ->setAttendeeCode('RTEATT0116')
             ->setSendAck('true')
             ->setExtReferenceID('ABC-123')
             ->setResSplitFolioTypeId(102)
@@ -262,12 +263,12 @@ class ReservationTest extends TestCase
 
       $globalInfo = new GlobalInfo();
       $globalInfo->setAgeQualifyingCode(22)->setCount(3)
-            ->setEarliestDate('2016-11-20')
-            ->setLatestDate('2016-11-25')
+            ->setEarliestDate('2016-11-22')
+            ->setLatestDate('2016-11-27')
             ->setText('some text');
       $reservation->setGlobalInfo($globalInfo);
 
-      $otherPayment = new OtherPayment;
+      $otherPayment = new OtherPayment();
       $otherPayment->setAmount(250)
                    ->setOPayDate('2016-11-01')
                    ->setOPayReferenceNum(123)
@@ -279,29 +280,25 @@ class ReservationTest extends TestCase
                    ->setAddressLine2('APT 222')
                    ->setCityName('North Hollywood')
                    ->setStateProv('CA')
+                   ->setPostalCode(91601)
                    ->setCountryName('United States')
                    ->setCountryCode('US')
                    ->setPhoneNumber('88827271212');
+
       $info->setOtherPayment($otherPayment);
       $reservation->setInfo($info);
 
       $client->setReservation($reservation);
 
       $xml = $client->getXml();
-
-      print_r($xml);
-
+      
       $result = $client->create($xml);
 
-      print_r($result);
-
       $parsed = $client->parse($result);
-
 
       $this->assertEquals(true, $parsed->isSuccess());
       $this->assertContains('<Status ID="2">PROCESSED</Status>', $result);
       $this->assertContains('<ota:UniqueId Id="', $result);
-
     }
 
     public function testModify() {

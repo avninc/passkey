@@ -17,7 +17,7 @@ class ClientTest extends TestCase
     {
       parent::setUp();
 
-      $this->client = new ReservationClient(null, [], true);
+      $this->client = (new ReservationClient())->setDebug(true)->refresh();
     }
 
     public function testClientInitiated()

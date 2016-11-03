@@ -210,6 +210,7 @@ class OtherPayment extends Element
     {
         $this->CountryName = $CountryName;
         $this->set('CountryName', $CountryName);
+        $this->params['OtherPayment']['OBillAddress']['CountryName']['value'] = $CountryName;
 
         return $this;
     }
@@ -435,6 +436,7 @@ class OtherPayment extends Element
     {
         $this->CountryCode = $CountryCode;
         $this->set('CountryCode', $CountryCode);
+        $this->params['OtherPayment']['OBillAddress']['CountryName']['attributes']['Code'] = $CountryCode;
 
         return $this;
     }

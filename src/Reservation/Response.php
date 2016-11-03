@@ -6,8 +6,6 @@ use Verdant\XML2Array;
 
 class Response
 {
-  protected $namespace = ['http://www.opentravel.org/OTA/2002/11' => 'ota'];
-
   protected $isSuccess = false;
 
   protected $statusId = 0;

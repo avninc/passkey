@@ -33,7 +33,6 @@ class GlobalInfo extends Element
             ],
           ],
           'ResGuestRPHs' => [],
-          'Memberships' => [],
           'SpecialRequests' => [
             'SpecialRequest' => [
               'Text' => $params['Text'] ?? null,
