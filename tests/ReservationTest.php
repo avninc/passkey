@@ -189,7 +189,8 @@ class ReservationTest extends TestCase
       $reservation = new Reservation;
 
       $info = new Info(['CustomFields' => ['test1', 'test2', 'test3']]);
-      $info->setEventID(1)->setAttendeeCode('RER')
+      $info->setEventID(1)
+            ->setAttendeeCode('RER')
             ->setSendAck('true')
             ->setExtReferenceID('ABC-123')
             ->setResSplitFolioTypeId(102)
