@@ -101,7 +101,7 @@ class ReservationTest extends TestCase
             ->setBlockID('1049123123')
             ->setPhoneNumber('8182551122')
             ->setPrimaryGuestRPH(1)
-            ->setReferrer('avn.com');
+            ->setReferrer('test.com');
       $reservation->setInfo($info);
 
       $createClient->setReservation($reservation);
@@ -199,7 +199,7 @@ class ReservationTest extends TestCase
             ->setBlockID('1049123123')
             ->setPhoneNumber('8182551122')
             ->setPrimaryGuestRPH(1)
-            ->setReferrer('avn.com');
+            ->setReferrer('test.com');
 
       $otherPayment = new OtherPayment;
       $otherPayment->setAmount(250)
@@ -259,7 +259,7 @@ class ReservationTest extends TestCase
             ->setBlockID('104570677')
             ->setPhoneNumber('8182551122')
             ->setPrimaryGuestRPH(1)
-            ->setReferrer('avn.com');
+            ->setReferrer('test.com');
 
       $globalInfo = new GlobalInfo();
       $globalInfo->setAgeQualifyingCode(22)->setCount(3)
@@ -291,7 +291,7 @@ class ReservationTest extends TestCase
       $client->setReservation($reservation);
 
       $xml = $client->getXml();
-      
+
       $result = $client->create($xml);
 
       $parsed = $client->parse($result);
@@ -401,7 +401,7 @@ class ReservationTest extends TestCase
               ->setSmokingAllowed(1)
               ->setPhysChallFeaturePref(1)
               ->setSpecRequestPref('testing special features')
-              ->setCompanyName('AVN Media Network, Inc.');
+              ->setCompanyName('Test');
 
         $guests[] = $guest;
       }
