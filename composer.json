@@ -18,7 +18,8 @@
     "require": {
         "php": "^7.0",
         "sabre/xml": "^1.5",
-        "verdant/xml2array": "dev-master"
+        "verdant/xml2array": "dev-master",
+        "guzzlehttp/guzzle": "~6.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^5.4"
