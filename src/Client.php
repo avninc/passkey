@@ -16,13 +16,14 @@ class Client extends SoapClient
    *
    * @var string
    */
-  const LIVE = 'https://api.passkey.com/axis/services';
+  protected static $live = 'https://api.passkey.com/axis/services';
+  
   /**
    * Development API endpoint
    *
    * @var string
    */
-  const DEVELOPMENT = 'https://training-api.passkey.com/axis/services';
+  protected static $development = 'https://training-api.passkey.com/axis/services';
 
   public $WSDL;
   /**
@@ -183,6 +184,26 @@ class Client extends SoapClient
     return $this->WSDL;
   }
 
+  public static function setLive($url)
+  {
+    static::$live = $url;
+  }
+
+  public static function setDevelopment($url)
+  {
+    static::$development = $url;
+  }
+
+  public static function getLive()
+  {
+      return static::$live;
+  }
+
+  public static function getDevelopment()
+  {
+      return static::$development;
+  }
+
   public function setNamespace(array $namespace)
   {
     $this->namespace = $namespace;
@@ -288,7 +309,7 @@ class Client extends SoapClient
 
   protected function getEndpoint()
   {
-    return $this->isDebug() ? static::DEVELOPMENT : static::LIVE;
+    return $this->isDebug() ? static::$development : static::$live;
   }
 
   public function getService()
