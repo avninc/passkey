@@ -94,10 +94,6 @@ class Profile
             return $value !== null;
         }, ARRAY_FILTER_USE_BOTH);
 
-        array_walk($fields, function(&$value) {
-            $value = urlencode($value);
-        });
-
         return $fields;
     }
 
