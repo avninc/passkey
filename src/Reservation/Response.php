@@ -376,4 +376,9 @@ class Response
     {
         return $this->raw;
     }
+
+    public function getData()
+    {
+        return $this->data;
+    }
 }
