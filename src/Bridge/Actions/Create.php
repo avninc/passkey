@@ -1,8 +1,8 @@
 <?php
 
-namespace Passkey\Reservation\Actions;
+namespace Passkey\Bridge\Actions;
 
-use Passkey\Reservation\Reservation;
+use Passkey\Bridge\Reservation;
 
 class Create extends Action
 {

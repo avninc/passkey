@@ -1,6 +1,6 @@
 <?php
 
-namespace Passkey\Reservation\Actions;
+namespace Passkey\Bridge\Actions;
 
 class Status extends Action
 {
