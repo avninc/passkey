@@ -137,44 +137,20 @@ class Response
                         ]);
                     }
 
-                    $reservationGuests = Helpers::data_get($dataReservation, 'ota:ResGuests.ota:ResGuest');
+                    $reservationGuests = Helpers::data_get($dataReservation, 'ota:ResGuests');
                     if($reservationGuests) {
                         $resGuests = [];
                         foreach($reservationGuests as $reservationGuest) {
-                            $profile = Helpers::data_get($reservationGuest, 'ota:Profiles.ota:ProfileInfo.ota:Profile');
-                            
-                            $contacts = [];
-                            $contactNumbers = Helpers::data_get($profile, 'ota:Customer.ota:Telephone');
-                            if($contactNumbers) {
-                                foreach($contactNumbers as $contactNumber) {
-                                    $contacts[] = [
-                                        'PhoneNumber' => Helpers::data_get($contactNumber, '@attributes.PhoneNumber'),
-                                        'PhoneTechType' => Helpers::data_get($contactNumber, '@attributes.PhoneTechType'),
-                                    ];
-                                } 
-                            }
+                            if(Helpers::data_get($reservationGuest, 'ota:Profiles')) {
+                                $profile = Helpers::data_get($reservationGuest, 'ota:Profiles.ota:ProfileInfo.ota:Profile');
 
-                            $resGuests[] = [
-                                'ResGuestRPH' => Helpers::data_get($reservationGuest, '@attributes.ResGuestRPH'),
-                                'NamePrefix' => Helpers::data_get($profile, 'ota:Customer.ota:PersonName.ota:NamePrefix'),
-                                'GivenName' => Helpers::data_get($profile, 'ota:Customer.ota:PersonName.ota:GivenName'),
-                                'Surname' => Helpers::data_get($profile, 'ota:Customer.ota:PersonName.ota:Surname'),
-                                'NameSuffix' => Helpers::data_get($profile, 'ota:Customer.ota:PersonName.ota:NameSuffix'),
-                                'Email' => Helpers::data_get($profile, 'ota:Customer.ota:Email'),
-                                'Address' => [
-                                    'AddressLine' => Helpers::data_get($profile, 'ota:Customer.ota:Address.ota:AddressLine.0'),
-                                    'AddressLine2' => Helpers::data_get($profile, 'ota:Customer.ota:Address.ota:AddressLine.1'),
-                                    'CityName' => Helpers::data_get($profile, 'ota:Customer.ota:Address.ota:CityName'),
-                                    'PostalCode' => Helpers::data_get($profile, 'ota:Customer.ota:Address.ota:PostalCode'),
-                                    'StateProv' => Helpers::data_get($profile, 'ota:Customer.ota:Address.ota:StateProv'),
-                                    'CountryName' => Helpers::data_get($profile, 'ota:Customer.ota:Address.ota:CountryName'),
-                                ],
-                                'ContactNumbers' => $contacts,
-                                'CompanyName' => Helpers::data_get($profile, 'ota:CompanyInfo.ota:CompanyName'),
-                                'PhysChallFeaturePref' => Helpers::data_get($profile, 'ota:PrefCollections.ota:PrefCollection.ota:HotelPref.ota:PhysChallFeaturePref.@value'),
-                                'PhysChallFeature' => Helpers::data_get($profile, 'ota:PrefCollections.ota:PrefCollection.ota:HotelPref.@attributes.PhysChallFeature'),
-                                'SpecRequestPref' => Helpers::data_get($profile, 'ota:PrefCollections.ota:PrefCollection.ota:HotelPref.ota:SpecRequestPref'),
-                            ];
+                                $resGuests[] = $this->buildGuest($reservationGuest, $profile);
+                            } else {
+                                foreach($reservationGuest as $reservationGuestProfile) {
+                                    $profile = Helpers::data_get($reservationGuestProfile, 'ota:Profiles.ota:ProfileInfo.ota:Profile');
+                                    $resGuests[] = $this->buildGuest($reservationGuest, $profile);
+                                }
+                            }
                         }
 
                         $this->set('reservationGuests', $resGuests);
@@ -182,7 +158,6 @@ class Response
 
                     $globalInfo = Helpers::data_get($dataReservation, 'ota:ResGlobalInfo');
                     if($globalInfo) {
-
                         $comments = [];
                         $otaComments = Helpers::data_get($globalInfo, 'ota:Comments');
                         foreach($otaComments as $otaComment) {
@@ -247,6 +222,42 @@ class Response
         }
         
         return $this;
+    }
+
+    protected function buildGuest($reservationGuest, $profile)
+    {
+        $contacts = [];
+        $contactNumbers = Helpers::data_get($profile, 'ota:Customer.ota:Telephone');
+        if($contactNumbers) {
+            foreach($contactNumbers as $contactNumber) {
+                $contacts[] = [
+                    'PhoneNumber' => Helpers::data_get($contactNumber, '@attributes.PhoneNumber'),
+                    'PhoneTechType' => Helpers::data_get($contactNumber, '@attributes.PhoneTechType'),
+                ];
+            } 
+        }
+
+        return [
+            'ResGuestRPH' => Helpers::data_get($reservationGuest, '@attributes.ResGuestRPH'),
+            'NamePrefix' => Helpers::data_get($profile, 'ota:Customer.ota:PersonName.ota:NamePrefix'),
+            'GivenName' => Helpers::data_get($profile, 'ota:Customer.ota:PersonName.ota:GivenName'),
+            'Surname' => Helpers::data_get($profile, 'ota:Customer.ota:PersonName.ota:Surname'),
+            'NameSuffix' => Helpers::data_get($profile, 'ota:Customer.ota:PersonName.ota:NameSuffix'),
+            'Email' => Helpers::data_get($profile, 'ota:Customer.ota:Email'),
+            'Address' => [
+                'AddressLine' => Helpers::data_get($profile, 'ota:Customer.ota:Address.ota:AddressLine.0'),
+                'AddressLine2' => Helpers::data_get($profile, 'ota:Customer.ota:Address.ota:AddressLine.1'),
+                'CityName' => Helpers::data_get($profile, 'ota:Customer.ota:Address.ota:CityName'),
+                'PostalCode' => Helpers::data_get($profile, 'ota:Customer.ota:Address.ota:PostalCode'),
+                'StateProv' => Helpers::data_get($profile, 'ota:Customer.ota:Address.ota:StateProv'),
+                'CountryName' => Helpers::data_get($profile, 'ota:Customer.ota:Address.ota:CountryName'),
+            ],
+            'ContactNumbers' => $contacts,
+            'CompanyName' => Helpers::data_get($profile, 'ota:CompanyInfo.ota:CompanyName'),
+            'PhysChallFeaturePref' => Helpers::data_get($profile, 'ota:PrefCollections.ota:PrefCollection.ota:HotelPref.ota:PhysChallFeaturePref.@value'),
+            'PhysChallFeature' => Helpers::data_get($profile, 'ota:PrefCollections.ota:PrefCollection.ota:HotelPref.@attributes.PhysChallFeature'),
+            'SpecRequestPref' => Helpers::data_get($profile, 'ota:PrefCollections.ota:PrefCollection.ota:HotelPref.ota:SpecRequestPref'),
+        ];
     }
 
     public function __set($key, $value)
