@@ -148,7 +148,7 @@ class Response
                             } else {
                                 foreach($reservationGuest as $reservationGuestProfile) {
                                     $profile = Helpers::data_get($reservationGuestProfile, 'ota:Profiles.ota:ProfileInfo.ota:Profile');
-                                    $resGuests[] = $this->buildGuest($reservationGuest, $profile);
+                                    $resGuests[] = $this->buildGuest($reservationGuestProfile, $profile);
                                 }
                             }
                         }
