@@ -90,22 +90,13 @@ class Response
                     $roomRates = Helpers::data_get($dataReservation, 'ota:RoomStays.ota:RoomStay.ota:RoomRates.ota:RoomRate.ota:Rates.ota:Rate');
                     if($roomRates) {
                         $rates = [];
-                        foreach($roomRates as $roomRate) {
-                            $rates[] = [
-                                'AgeQualifyingCode' => Helpers::data_get($roomRate, '@attributes.AgeQualifyingCode'),
-                                'EffectiveDate' => Helpers::data_get($roomRate, '@attributes.EffectiveDate'),
-                                'ExpireDate' => Helpers::data_get($roomRate, '@attributes.ExpireDate'),
-                                'AmountBeforeTax' => Helpers::data_get($roomRate, 'ota:Base.@attributes.AmountBeforeTax'),
-                                'CurrencyCode' => Helpers::data_get($roomRate, 'ota:Base.@attributes.CurrencyCode'),
-                                'DecimalPlaces' => Helpers::data_get($roomRate, 'ota:Base.@attributes.DecimalPlaces'),
-                                'AdditionalGuestAmount' => [
-                                    'AgeQualifyingCode' => Helpers::data_get($roomRate, 'ota:AdditionalGuestAmounts.ota:AdditionalGuestAmount.@attributes.AgeQualifyingCode'),
-                                    'AmountBeforeTax' => Helpers::data_get($roomRate, 'ota:AdditionalGuestAmounts.ota:AdditionalGuestAmount.ota:Amount.@attributes.AmountBeforeTax'),
-                                    'CurrencyCode' => Helpers::data_get($roomRate, 'ota:AdditionalGuestAmounts.ota:AdditionalGuestAmount.ota:Amount.@attributes.CurrencyCode'),
-                                    'DecimalPlaces' => Helpers::data_get($roomRate, 'ota:AdditionalGuestAmounts.ota:AdditionalGuestAmount.ota:Amount.@attributes.DecimalPlaces'),
-                                    'Text' => Helpers::data_get($roomRate, 'ota:AdditionalGuestAmounts.ota:AdditionalGuestAmount.ota:AddlGuestAmtDescription.ota:Text'),
-                                ],
-                            ];
+
+                        if(Helpers::data_get($roomRates, 'ota:Base')) {
+                            $rates[] = $this->buildRoomRate($roomRates);
+                        } else {
+                            foreach($roomRates as $roomRate) {
+                                $rates[] = $this->buildRoomRate($roomRate);
+                            }
                         }
 
                         $this->set('RoomRates', $rates);
@@ -229,6 +220,25 @@ class Response
         }
         
         return $this;
+    }
+
+    protected function buildRoomRate($roomRate)
+    {
+        return [
+            'AgeQualifyingCode' => Helpers::data_get($roomRate, '@attributes.AgeQualifyingCode'),
+            'EffectiveDate' => Helpers::data_get($roomRate, '@attributes.EffectiveDate'),
+            'ExpireDate' => Helpers::data_get($roomRate, '@attributes.ExpireDate'),
+            'AmountBeforeTax' => Helpers::data_get($roomRate, 'ota:Base.@attributes.AmountBeforeTax'),
+            'CurrencyCode' => Helpers::data_get($roomRate, 'ota:Base.@attributes.CurrencyCode'),
+            'DecimalPlaces' => Helpers::data_get($roomRate, 'ota:Base.@attributes.DecimalPlaces'),
+            'AdditionalGuestAmount' => [
+                'AgeQualifyingCode' => Helpers::data_get($roomRate, 'ota:AdditionalGuestAmounts.ota:AdditionalGuestAmount.@attributes.AgeQualifyingCode'),
+                'AmountBeforeTax' => Helpers::data_get($roomRate, 'ota:AdditionalGuestAmounts.ota:AdditionalGuestAmount.ota:Amount.@attributes.AmountBeforeTax'),
+                'CurrencyCode' => Helpers::data_get($roomRate, 'ota:AdditionalGuestAmounts.ota:AdditionalGuestAmount.ota:Amount.@attributes.CurrencyCode'),
+                'DecimalPlaces' => Helpers::data_get($roomRate, 'ota:AdditionalGuestAmounts.ota:AdditionalGuestAmount.ota:Amount.@attributes.DecimalPlaces'),
+                'Text' => Helpers::data_get($roomRate, 'ota:AdditionalGuestAmounts.ota:AdditionalGuestAmount.ota:AddlGuestAmtDescription.ota:Text'),
+            ],
+        ];
     }
 
     protected function buildGuest($reservationGuest, $profile)
