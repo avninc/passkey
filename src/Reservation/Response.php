@@ -205,6 +205,12 @@ class Response
 
                     $tpaExtensions = Helpers::data_get($dataReservation, 'ota:TPA_Extensions');
                     if($tpaExtensions) {
+                        $primaryGuest = Helpers::data_get($tpaExtensions, 'ota:PK_Info.ota:PrimaryGuestRPH.0');
+
+                        if(!$primaryGuest) {
+                            $primaryGuest = Helpers::data_get($tpaExtensions, 'ota:PK_Info.ota:PrimaryGuestRPH');
+                        }
+
                         $this->set('extensions', [
                             'EventID' => Helpers::data_get($tpaExtensions, 'ota:PK_Info.ota:EventID'),
                             'AttendeeCode' => Helpers::data_get($tpaExtensions, 'ota:PK_Info.ota:AttendeeCode'),
@@ -213,7 +219,7 @@ class Response
                             'ReceivedFrom' => Helpers::data_get($tpaExtensions, 'ota:PK_Info.ota:ReceivedFrom'),
                             'PaymentType' => Helpers::data_get($tpaExtensions, 'ota:PK_Info.ota:PaymentType'),
                             'BillPhone' => Helpers::data_get($tpaExtensions, 'ota:PK_Info.ota:BillPhone.@attributes.PhoneNumber'),
-                            'PrimaryGuestRPH' => Helpers::data_get($tpaExtensions, 'ota:PK_Info.ota:PrimaryGuestRPH.0'),
+                            'PrimaryGuestRPH' => $primaryGuest,
                             'BlockId' => Helpers::data_get($tpaExtensions, 'ota:PK_Info.ota:BlockID.@attributes.Id'),
                         ]);
                     }
