@@ -74,6 +74,7 @@ class Response
 
                 $dataReservation = Helpers::data_get($data, 'ota:OTA_HotelResRS.ota:HotelReservations.ota:HotelReservation');
                 if($dataReservation) {
+                    $this->set('AckNumber', $this->getUniqueId());
                     $this->set('CreateDateTime', Helpers::data_get($dataReservation, '@attributes.CreateDateTime'));
                     $this->set('LastModifyDateTime', Helpers::data_get($dataReservation, '@attributes.LastModifyDateTime'));
                     $this->set('RoomStayReservation', Helpers::data_get($dataReservation, '@attributes.RoomStayReservation'));
