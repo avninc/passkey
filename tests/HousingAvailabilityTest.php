@@ -41,8 +41,8 @@ class HousingAvailabilityTest extends TestCase
       $this->client->setMessage($message);
       $getClient->setMessage($message);
 
-      $getClient->setEventId(49249938);
-      $getClient->setAttendeeCode('SAVN18G');
+      $getClient->setEventId(222222);
+      $getClient->setAttendeeCode('xxxx');
       $getClient->setStartDate(new DateTime('2018-01-19'));
       $getClient->setEndDate(new DateTime('2018-01-29'));
 
