@@ -33,7 +33,7 @@ class HousingAvailabilityTest extends TestCase
     {
       $getClient = new GetAvilability;
 
-      $security = new Security('AVNAPI', '6F7GJF9V3', 15067201);
+      $security = new Security('reglinkapi', 'passkey1', 136260);
       $this->client->setSecurity($security);
       $getClient->setSecurity($security);
 
