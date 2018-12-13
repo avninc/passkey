@@ -35,7 +35,7 @@ class ReservationGetTest extends TestCase
     {
         echo 1;
         $client = new Get;
-        $security = new Security('AVNAPI', '6F7GJF9V3', 15067201);
+        $security = new Security('reglinkapi', 'passkey1', 136260);
         $client->setSecurity($security);
 
         $message = new Message('GetReservation', 'GetReservation');
