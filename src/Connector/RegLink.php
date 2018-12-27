@@ -22,7 +22,7 @@ class RegLink
         $this->setProfile($profile)
              ->setEndpoint($endpoint);
             
-        $this->client = new Client;
+        $this->client = new Client(['verify' => false]);
     }
 
     public function post()

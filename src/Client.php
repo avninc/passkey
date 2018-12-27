@@ -105,7 +105,23 @@ class Client extends SoapClient
           $this->setWsdl($this->getService());
       }
 
-      $this->options = $options + ['soap_version' => $this->soapVersion, 'trace' => $this->tracingEnabled];
+      $this->options = $options + [
+        'soap_version' => $this->soapVersion,
+        'trace' => $this->tracingEnabled,
+        'location' => $wsdl,
+        'user_agent' => 'PHP WS',
+        'cache_wsdl' => WSDL_CACHE_NONE,
+        'exceptions' => true,
+        'features' => SOAP_SINGLE_ELEMENT_ARRAYS,
+        'stream_context' => stream_context_create(
+            [
+                'ssl' => [
+                    'verify_peer' => false,
+                    'verify_peer_name' => false,
+                ]
+            ]
+        )
+      ];
 
       $this->setXmlService(new Service());
       $this->getXmlService()->namespaceMap = $this->namespace;

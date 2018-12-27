@@ -33,7 +33,6 @@ class ReservationGetTest extends TestCase
 
     public function testGet()
     {
-        echo 1;
         $client = new Get;
         $security = new Security('AVNAPI', '6F7GJF9V3', 15067201);
         $client->setSecurity($security);
@@ -51,15 +50,10 @@ class ReservationGetTest extends TestCase
         $xml = $client->getXml();
 
         $result = $client->get($xml);
-      
-        print_r($result);
-        exit;
 
         $parsed = $client->parse($result);
 
-        print_r($parsed);
-
-        $this->assertContains('<ota:UniqueId Type="RES" Id="328SZVW7"/>', $xml);
+        $this->assertContains('<ota:UniqueId Type="RES"', $xml);
         $this->assertContains('<ShowAckInfo>true</ShowAckInfo>', $xml);
         $this->assertContains('<OP>GetReservation</OP>', $xml);
     }

@@ -39,7 +39,7 @@ class Helpers
             } elseif (is_object($target) && isset($target->{$segment})) {
                 $target = $target->{$segment};
             } else {
-                return value($default);
+                return static::value($default);
             }
         }
 

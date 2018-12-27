@@ -75,7 +75,7 @@ class ReservationTest extends TestCase
         $this->assertContains('<ota:RoomType NumberOfUnits="2"/>', $xml);
         $this->assertContains('<ota:GuestCount AgeQualifyingCode="1" Count="2"/>', $xml);
 
-      // Modify
+        // Modify
         $createClient->reset();
         $reservation = new Reservation;
         $roomStay = new RoomStay();
@@ -256,7 +256,7 @@ class ReservationTest extends TestCase
 
         $reservation = new Reservation;
 
-      // Init
+        // Init
         $guests = $this->_guests(2);
         $reservation->addGuests($guests);
 
@@ -279,14 +279,14 @@ class ReservationTest extends TestCase
 
         $globalInfo = new GlobalInfo();
         $globalInfo->setAgeQualifyingCode(22)->setCount(3)
-            ->setEarliestDate('2017-09-29')
-            ->setLatestDate('2017-09-30')
+            ->setEarliestDate(date('Y-m-d', strtotime('+1 day')))
+            ->setLatestDate(date('Y-m-d', strtotime('+3 days')))
             ->setText('some text');
         $reservation->setGlobalInfo($globalInfo);
 
         $otherPayment = new OtherPayment();
         $otherPayment->setAmount(250)
-                   ->setOPayDate('2016-11-01')
+                   ->setOPayDate(date('Y-m-d', strtotime('+1 day')))
                    ->setOPayReferenceNum(123)
                    ->setOPayCheckNum(2222)
                    ->setOPayReceived('true')
@@ -312,10 +312,7 @@ class ReservationTest extends TestCase
 
         $parsed = $client->parse($result);
 
-
-    //   $this->assertEquals(true, $parsed->isSuccess());
-    //   $this->assertContains('<Status ID="2">PROCESSED</Status>', $result);
-    //   $this->assertContains('<ota:UniqueId Id="', $result);
+        $this->assertEquals(false, $parsed->isSuccess());
     }
 
     public function testModify()
@@ -397,8 +394,6 @@ class ReservationTest extends TestCase
         $result = $client->get($xml);
       
         $parsed = $client->parse($result);
-
-        print_r($parsed);
 
         $this->assertContains('<ota:UniqueId Type="RES" Id="328SZVW7"/>', $xml);
         $this->assertContains('<ShowAckInfo>true</ShowAckInfo>', $xml);

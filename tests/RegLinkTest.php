@@ -35,10 +35,8 @@ class RegLinkTest extends TestCase
         $this->assertNotNull($post);
 
         if($reg->getIsSuccess()) {
-            echo $reg->getBridgeId();
             $this->assertNotNull($reg->getBridgeId());
             $aws = new AWS($reg->getBridgeId(), 146021);
-            echo $aws->registration();
         } else {
             echo $reg->getErrorMessage();
             return;
